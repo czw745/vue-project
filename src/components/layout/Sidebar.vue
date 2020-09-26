@@ -78,7 +78,7 @@
                     children: [
                         {
                             title: '方案列表',
-                            to: '/SalesPlan'
+                            to: '/SalesProgram'
                         },
                         {
                             title: '購買列表',

@@ -1,0 +1,37 @@
+@import '~vuetify/src/styles/settings/_colors.scss';
+// @import '~vuetify/src/styles/settings/_light.scss';
+// @import '~vuetify/src/styles/settings/_dark.scss';
+
+$material-light: ('background': map-get($grey, 'lighten-2'));
+$material-dark: ('dividers':rgba(255, 226, 170, 0.12),
+        'text': ('theme': '#ffe2aa'
+        ),
+        'text-fields': ('outlined': rgba(255, 226, 170, 0.24),
+                'outlined-disabled': rgba(255, 226, 170, 0.16),
+                'outlined-hover': '#ffe2aa'
+        ),
+        'text-color': '#ffe2aa'
+);
+$shadow-key-umbra-opacity: rgba(82, 63, 105, .1);
+$shadow-key-penumbra-opacity: rgba(82, 63, 105, .1);
+$shadow-key-ambient-opacity: rgba(82, 63, 105, .1);
+$text-field-append-prepend-margin: 10px;
+$body-font-family: 'PingFang TC',
+'Noto Sans TC',
+'Roboto',
+sans-serif;
+$font-size-root: 14px;
+$label-font-size: 1rem;
+$subheader-left-padding: 0;
+$grid-breakpoints: (
+        'xs': 0,
+        'sm': 768px,
+        'md': 1280px,
+        'lg': 1600px,
+        'xl': 1920px
+);
+$container-max-widths: (
+        'md': 1280px * 0.95,
+        'lg': 1600px * 0.95,
+        'xl': 1920px * 0.95
+);

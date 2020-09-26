@@ -5,6 +5,7 @@
 <script>
     import Default from '@/components/layout/Default'
     import FullWidth from '@/components/layout/FullWidth'
+    import '@/scss/common.scss'
 
     export default {
         name: 'App',
