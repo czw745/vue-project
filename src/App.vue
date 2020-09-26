@@ -1,60 +1,29 @@
 <template>
-  <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-main>
-      <HelloWorld/>
-    </v-main>
-  </v-app>
+  <component :is="currentLayout"/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+    import Default from '@/components/layout/Default'
+    import FullWidth from '@/components/layout/FullWidth'
 
-export default {
-  name: 'App',
-
-  components: {
-    HelloWorld,
-  },
-
-  data: () => ({
-    //
-  }),
-};
+    export default {
+        name: 'App',
+        components: {},
+        data() {
+            return {
+                layouts: {
+                    fullWidth: FullWidth,
+                    sideBar: Default
+                }
+            }
+        },
+        computed: {
+            currentLayout() {
+                if (Object.keys(this.$route.meta).includes('layout')) {
+                    return this.layouts[this.$route.meta.layout]
+                }
+                return Default
+            }
+        }
+    };
 </script>
