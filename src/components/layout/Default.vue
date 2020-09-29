@@ -2,8 +2,8 @@
   <v-app
       class="accent"
   >
-    <sidebar />
-    <topbar />
+    <sidebar/>
+    <topbar/>
 
     <v-main>
       <v-container>
@@ -15,12 +15,12 @@
         />
 
         <v-scroll-y-transition>
-          <router-view />
+          <router-view/>
         </v-scroll-y-transition>
       </v-container>
     </v-main>
 
-    <snackbar />
+    <snackbar/>
   </v-app>
 </template>
 
@@ -28,9 +28,10 @@
     import Sidebar from '@/components/layout/Sidebar'
     import Topbar from '@/components/layout/Topbar'
     import Snackbar from '@/components/layout/Snackbar'
-  export default {
+
+    export default {
         name: 'Default',
-      components: { Sidebar, Topbar, Snackbar },
-      data:() => ({})
-  }
+        components: {Sidebar, Topbar, Snackbar},
+        data: () => ({})
+    }
 </script>

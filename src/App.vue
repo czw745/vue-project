@@ -14,7 +14,7 @@
             return {
                 layouts: {
                     fullWidth: FullWidth,
-                    sideBar: Default
+                    default: Default
                 }
             }
         },

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -54,6 +55,27 @@ const routes = [
         component: () => import('@/views/sales/Refund.vue')
     },
     {
+        path: '/auth',
+        component: () => import('@/views/AuthWrapper.vue'),
+        meta: {
+            requiresAuth: false
+        },
+        children: [
+            {
+                path: '',
+                redirect: 'login'
+            },
+            {
+                path: 'login',
+                component: () => import('@/views/Login.vue'),
+                meta: {
+                    layout: 'fullWidth',
+                    requiresAuth: false
+                }
+            }
+        ]
+    },
+    {
         name: '404',
         path: '/404',
         component: () => import('@/views/NotFound.vue')
@@ -66,8 +88,27 @@ const routes = [
 
 const router = new VueRouter({
     mode: 'history',
-    base: process.env.BASE_URL,
     routes
+})
+
+router.beforeEach(async (to, from, next) => {
+    if (
+        to.matched.some(
+            record => !Object.keys(record.meta).includes('requiresAuth')
+        )
+    ) {
+        const token = await store.dispatch('auth/checkTokenExists')
+        console.log('token', token)
+        if (!token) {
+            if (from.path !== '/auth/login') {
+                next({
+                    path: '/auth/login'
+                })
+            }
+        }
+        next()
+    }
+    next()
 })
 
 export default router
