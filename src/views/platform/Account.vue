@@ -11,6 +11,7 @@
 </template>
 
 <script>
+  import {mapGetters, mapActions} from "vuex"
     export default {
         name: 'PlatformAccount',
         components: {},
@@ -24,9 +25,25 @@
                 { text: '操作', sortable: false, value: 'action' }
             ]
         }),
+        created() {
+            this.init()
+        },
         computed: {
+            ...mapGetters('user', ['usersGetter']),
             items () {
                 return []
+            }
+        },
+        methods: {
+            ...mapActions('user', ['showUsers']),
+            init () {
+                this.showUsers()
+                  .then(res => {
+                      console.log(res)
+                  })
+                  .catch(err => {
+                      console.log(err)
+                  })
             }
         }
     }
