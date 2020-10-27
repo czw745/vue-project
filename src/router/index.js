@@ -14,7 +14,18 @@ const routes = [
     { // 帳號
         path: '/PlatformAccount',
         name: 'PlatformAccount',
-        component: () => import('@/views/platform/Account.vue')
+        component: () => import('@/views/platform/Account.vue'),
+    },
+    { // 帳號 新增
+        path: '/PlatformAccount/create',
+        name: 'PlatformAccountCreate',
+        component: () => import('@/views/platform/AccountCreate.vue')
+    },
+    { // 帳號 編輯
+        path: '/PlatformAccount/edit/:user_id',
+        name: 'PlatformAccountEdit',
+        component: () => import('@/views/platform/AccountEdit.vue'),
+        props: true
     },
     { // 角色
         path: '/PlatformRole',
