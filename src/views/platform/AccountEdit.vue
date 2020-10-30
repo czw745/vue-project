@@ -36,7 +36,12 @@
           </v-col>
         </v-row>
         <div class="d-flex justify-end">
-          <v-btn @click="save">確認送出</v-btn>
+          <v-btn @click="save" color="primary" :disabled="save_loading">
+            <div v-show="!save_loading">確認送出</div>
+            <div v-show="save_loading">
+              <v-progress-circular size="25" indeterminate></v-progress-circular>
+            </div>
+          </v-btn>
         </div>
       </div>
     </v-card>
@@ -77,6 +82,7 @@
                 password_confirm: '',
                 company_id: ''
             },
+            save_loading: false,
             nameRules: [
                 v => !!v || 'Name is required',
                 v => v.length <= 10 || 'Name must be less than 10 characters',
@@ -103,11 +109,13 @@
         },
         methods: {
             ...mapActions('user', ['userShowAct', 'userUpdateAct']),
+            ...mapActions('common', ['snackbarAct']),
             init() {
                 this.userShowAct(this.user_id)
             },
             save() {
                 const self = this
+                self.save_loading = true
                 const body = {
                     id: self.user_id,
                     raw: {
@@ -127,7 +135,15 @@
                 self.userUpdateAct(body)
                     .then(res => {
                         if (res) {
-                            self.$router.push({name: 'PlatformAccount'})
+                            const snackbar = {
+                                status: self.save_loading,
+                                color: 'success',
+                                message: res.message
+                            }
+                            self.snackbarAct(snackbar)
+                            setTimeout(function () {
+                                self.$router.push({name: 'PlatformAccount'})
+                            },1000)
                         }
                     })
             }

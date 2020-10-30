@@ -32,6 +32,17 @@ const routes = [
         name: 'PlatformRole',
         component: () => import('@/views/platform/Role.vue')
     },
+    { // 角色 新增
+        path: '/PlatformRole/create',
+        name: 'PlatformRoleCreate',
+        component: () => import('@/views/platform/RoleCreate.vue')
+    },
+    { // 角色 編輯
+        path: '/PlatformRole/edit/:role_id',
+        name: 'PlatformRoleEdit',
+        component: () => import('@/views/platform/RoleEdit.vue'),
+        props: true
+    },
     // 會員管理
     { // 個人資料
         path: '/MemberProfile',

@@ -5,13 +5,18 @@
         <router-view/>
       </v-container>
     </v-main>
-    <snackbar/>
+    <Dialog/>
+    <Snackbar/>
   </v-app>
 </template>
 <script>
-    import snackbar from '@/components/layout/Snackbar'
+    import Snackbar from '@/components/layout/Snackbar'
+    import Dialog from '@/components/layout/Dialog'
 
     export default {
-        components: {snackbar}
+        components: {
+            Snackbar,
+            Dialog
+        }
     }
 </script>

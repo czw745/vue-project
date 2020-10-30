@@ -19,7 +19,7 @@
         </v-scroll-y-transition>
       </v-container>
     </v-main>
-
+    <Dialog/>
     <snackbar/>
   </v-app>
 </template>
@@ -28,10 +28,11 @@
     import Sidebar from '@/components/layout/Sidebar'
     import Topbar from '@/components/layout/Topbar'
     import Snackbar from '@/components/layout/Snackbar'
+    import Dialog from '@/components/layout/Dialog'
 
     export default {
         name: 'Default',
-        components: {Sidebar, Topbar, Snackbar},
+        components: {Sidebar, Topbar, Snackbar, Dialog},
         data: () => ({})
     }
 </script>
