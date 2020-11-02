@@ -101,6 +101,7 @@
                         }
                     })
                     .catch(err => {
+                        self.save_loading = false
                         const snackbar = {
                             status: true,
                             color: 'error',

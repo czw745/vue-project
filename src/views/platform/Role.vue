@@ -25,7 +25,7 @@
                  outlined fab depressed x-small dark>
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
-          <v-btn v-if="item.action === true" color="error" class="mr-2" @click="confirmDelete(item.id)"
+          <v-btn v-if="item.action === true" color="error" class="mr-2" @click="deleteConfirm(item.id)"
                  outlined fab depressed x-small dark>
             <v-icon>mdi-delete</v-icon>
           </v-btn>
@@ -149,7 +149,7 @@
                         self.snackbarAct(item)
                     })
             },
-            confirmDelete(id) {
+            deleteConfirm(id) {
                 const self = this
                 const item = {
                     status: true,

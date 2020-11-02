@@ -91,7 +91,7 @@
             roleShowGet(e) {
                 this.body.name = e.name ? e.name : ''
                 this.body.display_name = e.display_name ? e.display_name : ''
-                this.body.status = e.status ? e.status : 0
+                this.body.status = e.status ? 1 : 0
                 this.body.deletable = e.deletable ? e.deletable : 0
             }
         },
@@ -127,6 +127,7 @@
                         }
                     })
                     .catch(err => {
+                        self.save_loading = false
                         const snackbar = {
                             status: true,
                             color: 'error',

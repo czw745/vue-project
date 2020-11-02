@@ -10,29 +10,28 @@
       </header>
       <div class="v-sheet theme--light rounded-0 pa-5">
         <v-row>
-          <v-col cols="3">
-            <v-text-field v-model="body.name" label="姓名" :rules="nameRules" flat dense required
-                          clearable></v-text-field>
+          <v-col cols="4">
+            <v-text-field v-model="body.name" label="姓名" :rules="nameRules" flat dense required></v-text-field>
           </v-col>
-          <v-col cols="3">
-            <v-text-field v-model="body.email" label="Email" :rules="emailRules" flat dense required
-                          clearable></v-text-field>
-          </v-col>
-          <v-col cols="3">
-            <v-text-field v-model="body.nickname" label="暱稱" flat dense clearable hide-details></v-text-field>
+          <v-col cols="4">
+            <v-text-field v-model="body.email" label="Email" :rules="emailRules" flat dense required></v-text-field>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="3">
-            <v-text-field v-model="body.phone" label="電話" flat dense clearable hide-details></v-text-field>
+          <v-col cols="4">
+            <v-text-field v-model="body.password" label="密碼" :rules="passwordRules" flat dense required></v-text-field>
+          </v-col>
+          <v-col cols="4">
+            <v-text-field v-model="body.password_confirm" label="確認密碼" :rules="passwordRules" flat dense
+                          required></v-text-field>
           </v-col>
           <v-col cols="3">
-            <v-text-field v-model="body.password" label="密碼" flat dense required clearable
-                          hide-details></v-text-field>
+            <v-select v-model="body.status" label="角色狀態" :items="status_items" flat dense></v-select>
           </v-col>
-          <v-col cols="3">
-            <v-text-field v-model="body.password_confirm" label="確認密碼" flat dense required clearable
-                          hide-details></v-text-field>
+        </v-row>
+        <v-row>
+          <v-col cols="8">
+            <v-combobox v-model="body.role" :items="role_items" label="角色權限" multiple chips></v-combobox>
           </v-col>
         </v-row>
         <div class="d-flex justify-end">
@@ -73,14 +72,24 @@
                     href: '/PlatformAccount/edit'
                 }
             ],
+            status_items: [
+                {
+                    text: '停用中',
+                    value: 0
+                },
+                {
+                    text: '使用中',
+                    value: 1
+                }
+            ],
             body: {
                 name: '',
-                nickname: '',
                 email: '',
-                phone: '',
                 password: '',
                 password_confirm: '',
-                company_id: ''
+                status: 1,
+                deletable: 1,
+                role: []
             },
             save_loading: false,
             nameRules: [
@@ -91,60 +100,103 @@
                 v => !!v || 'E-mail is required',
                 v => /.+@.+/.test(v) || 'E-mail must be valid',
             ],
+            passwordRules: [
+                v => !!v || 'Password is required',
+                v => v.length <= 10 || 'Password must be less than 10 characters',
+            ],
         }),
         created() {
             this.init()
         },
         computed: {
-            ...mapGetters('user', ['userShowGet'])
+            ...mapGetters('user', ['userShowGet', 'userRoleSelectGet']),
+            role_items() {
+                var data = []
+                if (this.userRoleSelectGet) {
+                    this.userRoleSelectGet.forEach(function (e) {
+                        const item = {
+                            value: e.id,
+                            text: e.name + ' (' + e.display_name + ')'
+                        }
+                        data.push(item)
+                    })
+                }
+                return data
+            }
         },
         watch: {
             userShowGet(e) {
+                var role = []
+                if (this.userShowGet) {
+                    this.userShowGet.role.forEach(function (e) {
+                        const item = {
+                            value: e.id,
+                            text: e.name + ' (' + e.display_name + ')'
+                        }
+                        role.push(item)
+                    })
+                }
                 this.body.name = e.name ? e.name : ''
-                this.body.nickname = e.nickname ? e.nickname : ''
                 this.body.email = e.email ? e.email : ''
-                this.body.phone = e.phone ? e.phone : ''
                 this.body.password = e.password ? e.password : ''
+                this.body.status = e.status ? 1 : 0
+                this.body.role = role
             }
         },
         methods: {
-            ...mapActions('user', ['userShowAct', 'userUpdateAct']),
+            ...mapActions('user', ['userShowAct', 'userRoleSelectAct', 'userUpdateAct']),
             ...mapActions('common', ['snackbarAct']),
             init() {
                 this.userShowAct(this.user_id)
+                this.userRoleSelectAct()
+            },
+            getRoleId(){
+                var data = []
+                this.body.role.forEach(function (e) {
+                    const item = {
+                        id: e.value
+                    }
+                    data.push(item)
+                })
+                return data
             },
             save() {
                 const self = this
                 self.save_loading = true
+                var role_id = this.getRoleId()
                 const body = {
                     id: self.user_id,
                     raw: {
                         name: self.body.name,
                         email: self.body.email,
-                        nickname: self.body.nickname,
-                        phone: self.body.phone,
-                        password: self.body.password
+                        password: self.body.password,
+                        status: self.body.status,
+                        deletable: self.body.deletable,
+                        role: role_id
                     }
-                }
-                if (!self.body.nickname) {
-                    self.$delete(body.raw, 'nickname')
-                }
-                if (!self.body.phone) {
-                    self.$delete(body.raw, 'phone')
                 }
                 self.userUpdateAct(body)
                     .then(res => {
                         if (res) {
                             const snackbar = {
-                                status: self.save_loading,
+                                status: true,
                                 color: 'success',
                                 message: res.message
                             }
                             self.snackbarAct(snackbar)
                             setTimeout(function () {
                                 self.$router.push({name: 'PlatformAccount'})
-                            },1000)
+                            }, 1000)
                         }
+                    })
+                    .catch(err => {
+                        self.save_loading = false
+                        const snackbar = {
+                            status: true,
+                            color: 'error',
+                            message: err.message
+                        }
+                        self.snackbarAct(snackbar)
                     })
             }
         }

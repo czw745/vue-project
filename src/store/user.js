@@ -44,8 +44,17 @@ export const actions = {
         const result = await putUser(body)
         return result
     },
-    async userDeleteAct(nullable, id) {
+    async userDeleteAct({commit}, id) {
         const result = await deleteUser(id)
+        if (result) {
+            const {data} = await getUser({
+                params: {
+                    page: 1,
+                    page_size: 5
+                }
+            })
+            commit('userQueryMut', data)
+        }
         return result
     },
     async userRoleSelectAct({commit}) {

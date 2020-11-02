@@ -10,22 +10,28 @@
       </header>
       <div class="v-sheet theme--light rounded-0 pa-5">
         <v-row>
-          <v-col cols="3">
+          <v-col cols="4">
             <v-text-field v-model="body.name" label="姓名" :rules="nameRules" flat dense required></v-text-field>
           </v-col>
-          <v-col cols="3">
+          <v-col cols="4">
             <v-text-field v-model="body.email" label="Email" :rules="emailRules" flat dense required></v-text-field>
-          </v-col>
-          <v-col cols="3">
-            <v-select v-model="body.role_id" label="角色權限" :items="role_items" flat dense></v-select>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="3">
+          <v-col cols="4">
             <v-text-field v-model="body.password" label="密碼" :rules="passwordRules" flat dense required></v-text-field>
           </v-col>
+          <v-col cols="4">
+            <v-text-field v-model="body.password_confirm" label="確認密碼" :rules="passwordRules" flat dense
+                          required></v-text-field>
+          </v-col>
           <v-col cols="3">
-            <v-text-field v-model="body.password_confirm" label="確認密碼" :rules="passwordRules" flat dense required></v-text-field>
+            <v-select v-model="body.status" label="角色狀態" :items="status_items" flat dense></v-select>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="8">
+            <v-combobox v-model="body.role" :items="role_items" label="角色權限" multiple chips></v-combobox>
           </v-col>
         </v-row>
         <div class="d-flex justify-end">
@@ -60,12 +66,24 @@
                     href: '/PlatformAccount/create'
                 }
             ],
+            status_items: [
+                {
+                    text: '停用中',
+                    value: 0
+                },
+                {
+                    text: '使用中',
+                    value: 1
+                }
+            ],
             body: {
                 name: '',
                 email: '',
                 password: '',
                 password_confirm: '',
-                role_id: ''
+                status: 1,
+                deletable: 1,
+                role: []
             },
             save_loading: false,
             nameRules: [
@@ -106,14 +124,27 @@
             init() {
                 this.userRoleSelectAct()
             },
+            getRoleId(){
+                var data = []
+                this.body.role.forEach(function (e) {
+                    const item = {
+                        id: e.value
+                    }
+                    data.push(item)
+                })
+                return data
+            },
             save() {
                 const self = this
                 self.save_loading = true
+                var role_id = this.getRoleId()
                 const body = {
                     name: self.body.name,
                     email: self.body.email,
                     password: self.body.password,
-                    role_id: self.body.role_id
+                    status: self.body.status,
+                    deletable: self.body.deletable,
+                    role: role_id
                 }
                 self.userCreateAct(body)
                     .then(res => {
@@ -130,15 +161,13 @@
                         }
                     })
                     .catch(err => {
+                        self.save_loading = false
                         const snackbar = {
                             status: true,
                             color: 'error',
                             message: err.message
                         }
                         self.snackbarAct(snackbar)
-                    })
-                    .finally(() => {
-                        self.save_loading = false
                     })
             }
         }

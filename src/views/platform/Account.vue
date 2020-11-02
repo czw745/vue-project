@@ -15,13 +15,23 @@
         </v-col>
       </v-row>
       <v-data-table :headers="headers" :items="items" :loading="isLoading" hide-default-footer>
+        <!-- >帳號角色<-->
+        <template v-slot:item.role="{item}">
+          <v-item-group multiple>
+            <v-chip v-for="(role, i) in item.role" :key="i" small dark class="mr-3">{{role.display_name}}</v-chip>
+          </v-item-group>
+        </template>
+        <!-- >帳號狀態<-->
+        <template v-slot:item.status="{ item }">
+          <v-switch v-if="item.name !== 'Admin'" v-model="item.status" flat dense inset @click="switchStatus(item)"></v-switch>
+        </template>
         <!-- >操作<-->
         <template v-slot:item.action="{ item }">
-          <v-btn v-if="item.action === true" color="teal darken-3" class="mr-2" :to="`/PlatformAccount/edit/${item.id}`"
+          <v-btn color="teal darken-3" class="mr-2" :to="`/PlatformAccount/edit/${item.id}`"
                  outlined fab depressed x-small dark>
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
-          <v-btn v-if="item.action === true" color="error" class="mr-2" @click="deleteUser(item.id)"
+          <v-btn v-if="item.action === true" color="error" class="mr-2" @click="deleteConfirm(item.id)"
                  outlined fab depressed x-small dark>
             <v-icon>mdi-delete</v-icon>
           </v-btn>
@@ -41,7 +51,7 @@
         components: {},
         data: () => ({
             headers: [
-                {text: '帳號角色', sortable: false, value: 'roles'},
+                {text: '帳號角色', sortable: false, value: 'role'},
                 {text: '帳號名稱', sortable: false, value: 'name'},
                 {text: '帳號信箱', sortable: false, value: 'email'},
                 {text: '建立時間', sortable: false, value: 'created_at'},
@@ -68,7 +78,8 @@
             }
         },
         methods: {
-            ...mapActions('user', ['userQueryAct', 'userSearchAct', 'userDeleteAct']),
+            ...mapActions('user', ['userQueryAct', 'userSearchAct', 'userUpdateAct', 'userDeleteAct']),
+            ...mapActions('common', ['snackbarAct', 'dialogAct']),
             init() {
                 this.isLoading = true
                 this.userQueryAct({
@@ -107,24 +118,72 @@
                 this.params.page = page
                 this.checkKeyword()
             },
-            deleteUser(id) {
-                this.userDeleteAct(id)
+            deleteConfirm(id) {
+                const self = this
+                const item = {
+                    status: true,
+                    title: "帳號權限",
+                    store: {
+                        module: 'user',
+                        action: 'userDeleteAct',
+                        id: id
+                    },
+                }
+                self.dialogAct(item)
+            },
+            switchStatus(item) {
+                const self = this
+                var status
+                if (item.status) {
+                    status = 1
+                } else {
+                    status = 0
+                }
+                const body = {
+                    id: item.id,
+                    raw: {
+                        status: status,
+                    }
+                }
+                self.userUpdateAct(body)
                     .then(res => {
                         if (res) {
-                            this.init()
+                            const item = {
+                                status: true,
+                                color: 'success',
+                                message: res.message
+                            }
+                            self.snackbarAct(item)
+                            self.init()
                         }
+                    })
+                    .catch(err => {
+                        const item = {
+                            status: true,
+                            color: 'error',
+                            message: err.message
+                        }
+                        self.snackbarAct(item)
                     })
             },
             mapItems(data) {
                 const result = []
                 if (data) {
                     data.forEach(function (e) {
+                        var action
+                        if (e.deletable) {
+                            action = true
+                        } else {
+                            action = false
+                        }
                         const item = {
                             id: e.id ? e.id : '',
                             name: e.name ? e.name : '--',
                             email: e.email ? e.email : '--',
                             created_at: e.created_at ? e.created_at : '--',
-                            action: true
+                            status: e.status ? 1 : 0,
+                            role: e.role ? e.role : [],
+                            action: action
                         }
                         result.push(item)
                     })
