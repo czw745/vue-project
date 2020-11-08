@@ -9,6 +9,14 @@
         編輯角色
       </header>
       <div class="v-sheet theme--light rounded-0 pa-5">
+        <div class="d-flex justify-end">
+          <v-btn @click="save" color="primary" :disabled="save_loading">
+            <div v-show="!save_loading">確認送出</div>
+            <div v-show="save_loading">
+              <v-progress-circular size="25" indeterminate></v-progress-circular>
+            </div>
+          </v-btn>
+        </div>
         <v-row>
           <v-col cols="3">
             <v-text-field v-model="body.name" label="角色名稱" :rules="nameRules" flat dense required></v-text-field>
@@ -21,14 +29,17 @@
             <v-select v-model="body.status" label="角色狀態" :items="status_items" flat dense></v-select>
           </v-col>
         </v-row>
-        <div class="d-flex justify-end">
-          <v-btn @click="save" color="primary" :disabled="save_loading">
-            <div v-show="!save_loading">確認送出</div>
-            <div v-show="save_loading">
-              <v-progress-circular size="25" indeterminate></v-progress-circular>
-            </div>
-          </v-btn>
-        </div>
+        <v-treeview
+            open-all
+            v-model="roleData.permissions"
+            selectable
+            selected-color="cyan darken-2"
+            item-children="permissions"
+            :items="permissionListGet"
+            item-text="display_name"
+            class="d-flex flew-wrap"
+        >
+        </v-treeview>
       </div>
     </v-card>
   </div>
@@ -80,12 +91,18 @@
                 v => !!v || 'Name is required',
                 v => v.length <= 20 || 'Name must be less than 20 characters',
             ],
+            roleData: {
+                permissions: [],
+                child: [],
+                name: ''
+            },
         }),
         created() {
             this.init()
         },
         computed: {
-            ...mapGetters('role', ['roleShowGet'])
+            ...mapGetters('role', ['roleShowGet']),
+            ...mapGetters('permission', ['permissionListGet'])
         },
         watch: {
             roleShowGet(e) {
@@ -93,13 +110,16 @@
                 this.body.display_name = e.display_name ? e.display_name : ''
                 this.body.status = e.status ? 1 : 0
                 this.body.deletable = e.deletable ? e.deletable : 0
+                this.roleData.permissions = e.permissions? e.permissions : []
             }
         },
         methods: {
             ...mapActions('role', ['roleShowAct', 'roleUpdateAct']),
             ...mapActions('common', ['snackbarAct']),
+            ...mapActions('permission', ['permissionListAct']),
             init() {
                 this.roleShowAct(this.role_id)
+                this.permissionListAct()
             },
             save() {
                 const self = this
@@ -139,3 +159,15 @@
         }
     }
 </script>
+
+<style lang="scss">
+  .v-treeview-node {
+    flex: 0 0 30%!important;
+  }
+  .v-treeview-node__children{
+    margin-bottom: 50px;
+  }
+  .flew-wrap {
+    flex-wrap: wrap;
+  }
+</style>

@@ -13,6 +13,11 @@ export async function searchRole (params) {
 
 export async function showRole (id) {
     const { data } = await api.get(url(`show/${id}`))
+    var permission_array = []
+    data.permissions.forEach(function(e) {
+        permission_array.push(e.id)
+    })
+    data.permissions = permission_array
     return data
 }
 

@@ -16,9 +16,9 @@
       </v-row>
       <v-data-table :headers="headers" :items="items" :loading="isLoading" hide-default-footer>
         <!-- >帳號角色<-->
-        <template v-slot:item.role="{item}">
+        <template v-slot:item.roles="{item}">
           <v-item-group multiple>
-            <v-chip v-for="(role, i) in item.role" :key="i" small dark class="mr-3">{{role.display_name}}</v-chip>
+            <v-chip v-for="(role, i) in item.roles" :key="i" small dark class="mr-3">{{role.display_name}}</v-chip>
           </v-item-group>
         </template>
         <!-- >帳號狀態<-->
@@ -51,7 +51,7 @@
         components: {},
         data: () => ({
             headers: [
-                {text: '帳號角色', sortable: false, value: 'role'},
+                {text: '帳號角色', sortable: false, value: 'roles'},
                 {text: '帳號名稱', sortable: false, value: 'name'},
                 {text: '帳號信箱', sortable: false, value: 'email'},
                 {text: '建立時間', sortable: false, value: 'created_at'},
@@ -182,7 +182,7 @@
                             email: e.email ? e.email : '--',
                             created_at: e.created_at ? e.created_at : '--',
                             status: e.status ? 1 : 0,
-                            role: e.role ? e.role : [],
+                            roles: e.roles ? e.roles : [],
                             action: action
                         }
                         result.push(item)
