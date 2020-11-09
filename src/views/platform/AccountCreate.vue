@@ -22,16 +22,12 @@
             <v-text-field v-model="body.password" label="密碼" :rules="passwordRules" flat dense required></v-text-field>
           </v-col>
           <v-col cols="4">
-            <v-text-field v-model="body.password_confirm" label="確認密碼" :rules="passwordRules" flat dense
-                          required></v-text-field>
-          </v-col>
-          <v-col cols="3">
             <v-select v-model="body.status" label="角色狀態" :items="status_items" flat dense></v-select>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="8">
-            <v-combobox v-model="body.role" :items="role_items" label="角色權限" multiple chips></v-combobox>
+            <v-combobox v-model="body.roles" :items="role_items" label="角色權限" multiple chips></v-combobox>
           </v-col>
         </v-row>
         <div class="d-flex justify-end">
@@ -83,7 +79,7 @@
                 password_confirm: '',
                 status: 1,
                 deletable: 1,
-                role: []
+                roles: []
             },
             save_loading: false,
             nameRules: [
@@ -103,11 +99,11 @@
             this.init()
         },
         computed: {
-            ...mapGetters('user', ['userRoleSelectGet']),
+            ...mapGetters('select', ['selectRolesGet']),
             role_items() {
                 var data = []
-                if (this.userRoleSelectGet) {
-                    this.userRoleSelectGet.forEach(function (e) {
+                if (this.selectRolesGet) {
+                    this.selectRolesGet.forEach(function (e) {
                         const item = {
                             value: e.id,
                             text: e.name + ' (' + e.display_name + ')'
@@ -119,14 +115,15 @@
             }
         },
         methods: {
-            ...mapActions('user', ['userCreateAct', 'userRoleSelectAct']),
+            ...mapActions('user', ['userCreateAct']),
+            ...mapActions('select', ['selectRolesAct']),
             ...mapActions('common', ['snackbarAct']),
             init() {
-                this.userRoleSelectAct()
+                this.selectRolesAct()
             },
-            getRoleId(){
+            getRoleId() {
                 var data = []
-                this.body.role.forEach(function (e) {
+                this.body.roles.forEach(function (e) {
                     const item = {
                         id: e.value
                     }
@@ -137,14 +134,14 @@
             save() {
                 const self = this
                 self.save_loading = true
-                var role_id = this.getRoleId()
+                const role_id = this.getRoleId()
                 const body = {
                     name: self.body.name,
                     email: self.body.email,
                     password: self.body.password,
                     status: self.body.status,
                     deletable: self.body.deletable,
-                    role: role_id
+                    roles: role_id
                 }
                 self.userCreateAct(body)
                     .then(res => {

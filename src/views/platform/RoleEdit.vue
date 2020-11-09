@@ -31,11 +31,11 @@
         </v-row>
         <v-treeview
             open-all
-            v-model="roleData.permissions"
+            v-model="body.permissions"
             selectable
             selected-color="cyan darken-2"
             item-children="permissions"
-            :items="permissionListGet"
+            :items="permission_items"
             item-text="display_name"
             class="d-flex flew-wrap"
         >
@@ -84,7 +84,8 @@
                 name: '',
                 display_name: '',
                 status: '',
-                deletable: ''
+                deletable: '',
+                permissions: [],
             },
             save_loading: false,
             nameRules: [
@@ -102,7 +103,10 @@
         },
         computed: {
             ...mapGetters('role', ['roleShowGet']),
-            ...mapGetters('permission', ['permissionListGet'])
+            ...mapGetters('permission', ['permissionListGet']),
+            permission_items() {
+                return this.permissionListGet ? this.permissionListGet : []
+            }
         },
         watch: {
             roleShowGet(e) {
@@ -110,7 +114,7 @@
                 this.body.display_name = e.display_name ? e.display_name : ''
                 this.body.status = e.status ? 1 : 0
                 this.body.deletable = e.deletable ? e.deletable : 0
-                this.roleData.permissions = e.permissions? e.permissions : []
+                this.body.permissions = e.permissions? e.permissions : []
             }
         },
         methods: {
@@ -121,15 +125,27 @@
                 this.roleShowAct(this.role_id)
                 this.permissionListAct()
             },
+            getPermissionId(){
+                const data = []
+                this.body.permissions.forEach(function (e) {
+                    const item = {
+                        id: e
+                    }
+                    data.push(item)
+                })
+                return data
+            },
             save() {
                 const self = this
                 self.save_loading = true
+                const permission_id = this.getPermissionId()
                 const body = {
                     id: self.role_id,
                     raw: {
                         name: self.body.name,
                         display_name: self.body.display_name,
                         status: self.body.status,
+                        permissions: permission_id
                     }
                 }
                 self.roleUpdateAct(body)

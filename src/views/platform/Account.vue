@@ -45,6 +45,7 @@
 
 <script>
     import {mapGetters, mapActions} from "vuex"
+    import {dateTimeFormat} from "../../utils/moment";
 
     export default {
         name: 'PlatformAccount',
@@ -180,7 +181,7 @@
                             id: e.id ? e.id : '',
                             name: e.name ? e.name : '--',
                             email: e.email ? e.email : '--',
-                            created_at: e.created_at ? e.created_at : '--',
+                            created_at: e.created_at ? dateTimeFormat(e.created_at) : '--',
                             status: e.status ? 1 : 0,
                             roles: e.roles ? e.roles : [],
                             action: action

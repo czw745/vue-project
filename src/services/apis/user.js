@@ -31,8 +31,3 @@ export async function deleteUser(id) {
     const {data} = await api.delete(url(`delete/${id}`))
     return data
 }
-
-export async function getRoleSelect() {
-    const {data} = await api.get(url('role-select'))
-    return data
-}
